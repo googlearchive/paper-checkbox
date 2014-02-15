@@ -2,8 +2,9 @@
   "name": "paper-ink",
   "private": true,
   "dependencies": {
-    "polymer": "Polymer/polymer#master",
-    "paper-ink": "Polymer/paper-ink#master",
-    "paper-radio-button": "Polymer/paper-radio-button#master"
-  }
+    "polymer": "Polymer/polymer#0.2.0",
+    "paper-ink": "Polymer/paper-ink#0.2.0",
+    "paper-radio-button": "Polymer/paper-radio-button#0.2.0"
+  },
+  "version": "0.2.0"
 }
