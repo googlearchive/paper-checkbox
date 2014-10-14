@@ -19,7 +19,7 @@ Example:
     <paper-checkbox></paper-checkbox>
 
     <paper-checkbox checked></paper-checkbox>
-    
+
 Styling checkbox:
 
 To change the ink color for checked state:
@@ -27,7 +27,7 @@ To change the ink color for checked state:
     paper-checkbox::shadow #ink[checked] {
       color: #4285f4;
     }
-    
+
 To change the checkbox checked color:
 
     paper-checkbox::shadow #checkbox.checked {
@@ -53,6 +53,7 @@ To change the checbox unchecked color:
 -->
 
 <link rel="import" href="../paper-radio-button/paper-radio-button.html">
+<link rel="import" href="../core-animation/core-animation.html">
 
 <polymer-element name="paper-checkbox" extends="paper-radio-button" role="checkbox">
 <template>
@@ -60,51 +61,150 @@ To change the checbox unchecked color:
   <link rel="stylesheet" href="paper-checkbox.css">
 
   <div id="checkboxContainer" class="{{ {labeled: label} | tokenList }}" >
-  
+
     <paper-ripple id="ink" class="circle recenteringTouch" checked?="{{!checked}}"></paper-ripple>
-     
-    <div id="checkbox" on-animationend="{{checkboxAnimationEnd}}" on-webkitAnimationEnd="{{checkboxAnimationEnd}}"></div>
-    
+
+    <div id="checkbox"></div>
+
+    <!-- checkbox checked animations -->
+
+    <core-animation id="box_shrink" duration="140" fill="forwards" easing="ease-out" on-core-animation-finish="{{checkboxAnimationEnd}}">
+      <core-animation-keyframe>
+        <core-animation-prop name="transform" value="rotate(0deg)"></core-animation-prop>
+        <core-animation-prop name="top" value="0px"></core-animation-prop>
+        <core-animation-prop name="left" value="0px"></core-animation-prop>
+        <core-animation-prop name="width" value="18px"></core-animation-prop>
+        <core-animation-prop name="height" value="18px"></core-animation-prop>
+      </core-animation-keyframe>
+      <core-animation-keyframe>
+        <core-animation-prop name="transform" value="rotate(45deg)"></core-animation-prop>
+        <core-animation-prop name="top" value="13px"></core-animation-prop>
+        <core-animation-prop name="left" value="5px"></core-animation-prop>
+        <core-animation-prop name="width" value="4px"></core-animation-prop>
+        <core-animation-prop name="height" value="4px"></core-animation-prop>
+      </core-animation-keyframe>
+    </core-animation>
+
+    <core-animation id="checkmark_expand" duration="140" fill="forwards" easing="ease-out" on-core-animation-finish="{{checkboxAnimationEnd}}">
+      <core-animation-keyframe>
+        <core-animation-prop name="transform" value="rotate(45deg)"></core-animation-prop>
+        <core-animation-prop name="top" value="13px"></core-animation-prop>
+        <core-animation-prop name="left" value="5px"></core-animation-prop>
+        <core-animation-prop name="width" value="4px"></core-animation-prop>
+        <core-animation-prop name="height" value="4px"></core-animation-prop>
+      </core-animation-keyframe>
+      <core-animation-keyframe>
+        <core-animation-prop name="transform" value="rotate(45deg)"></core-animation-prop>
+        <core-animation-prop name="top" value="-4px"></core-animation-prop>
+        <core-animation-prop name="left" value="6px"></core-animation-prop>
+        <core-animation-prop name="width" value="10px"></core-animation-prop>
+        <core-animation-prop name="height" value="21px"></core-animation-prop>
+        <core-animation-prop name="border-right-width" value="2px"></core-animation-prop>
+        <core-animation-prop name="border-bottom-width" value="2px"></core-animation-prop>
+      </core-animation-keyframe>
+    </core-animation>
+
+    <!-- checkbox unchecked animations -->
+
+    <core-animation id="checkmark_shrink" duration="140" fill="forwards" easing="ease-out" on-core-animation-finish="{{checkboxAnimationEnd}}">
+      <core-animation-keyframe>
+        <core-animation-prop name="top" value="-4px"></core-animation-prop>
+        <core-animation-prop name="left" value="6px"></core-animation-prop>
+        <core-animation-prop name="width" value="10px"></core-animation-prop>
+        <core-animation-prop name="height" value="21px"></core-animation-prop>
+        <core-animation-prop name="border-right-width" value="2px"></core-animation-prop>
+        <core-animation-prop name="border-bottom-width" value="2px"></core-animation-prop>
+      </core-animation-keyframe>
+      <core-animation-keyframe>
+        <core-animation-prop name="top" value="13px"></core-animation-prop>
+        <core-animation-prop name="left" value="5px"></core-animation-prop>
+        <core-animation-prop name="width" value="4px"></core-animation-prop>
+        <core-animation-prop name="height" value="4px"></core-animation-prop>
+      </core-animation-keyframe>
+    </core-animation>
+
+    <core-animation id="box_expand" duration="140" fill="forwards" easing="ease-out" on-core-animation-finish="{{checkboxAnimationEnd}}">
+      <core-animation-keyframe>
+        <core-animation-prop name="transform" value="rotate(45deg)"></core-animation-prop>
+        <core-animation-prop name="top" value="13px"></core-animation-prop>
+        <core-animation-prop name="left" value="5px"></core-animation-prop>
+        <core-animation-prop name="width" value="4px"></core-animation-prop>
+        <core-animation-prop name="height" value="4px"></core-animation-prop>
+      </core-animation-keyframe>
+      <core-animation-keyframe>
+        <core-animation-prop name="transform" value="rotate(0deg)"></core-animation-prop>
+        <core-animation-prop name="top" value="0px"></core-animation-prop>
+        <core-animation-prop name="left" value="0px"></core-animation-prop>
+        <core-animation-prop name="width" value="18px"></core-animation-prop>
+        <core-animation-prop name="height" value="18px"></core-animation-prop>
+      </core-animation-keyframe>
+    </core-animation>
+
   </div>
-  
+
   <div id="checkboxLabel" hidden?="{{!label}}">{{label}}<content></content></div>
 
 </template>
 <script>
 
-  Polymer('paper-checkbox', {
-    
-    /**
-     * Fired when the checked state changes due to user interaction.
-     *
-     * @event change
-     */
-     
-    /**
-     * Fired when the checked state changes.
-     *
-     * @event core-change
-     */
-    
-    toggles: true,
+	Polymer('paper-checkbox', {
 
-    checkedChanged: function() {
-      var cl = this.$.checkbox.classList;
-      cl.toggle('checked', this.checked);
-      cl.toggle('unchecked', !this.checked);
-      cl.toggle('checkmark', !this.checked);
-      cl.toggle('box', this.checked);
-      this.setAttribute('aria-checked', this.checked ? 'true': 'false');
-      this.fire('core-change');
-    },
+		/**
+		* Fired when the checked state changes due to user interaction.
+		*
+		* @event change
+		*/
 
-    checkboxAnimationEnd: function() {
-      var cl = this.$.checkbox.classList;
-      cl.toggle('checkmark', this.checked && !cl.contains('checkmark'));
-      cl.toggle('box', !this.checked && !cl.contains('box'));
-    }
+		/**
+		* Fired when the checked state changes.
+		*
+		* @event core-change
+		*/
 
-  });
-  
+		toggles: true,
+
+		checkedChanged: function () {
+			var cl = this.$.checkbox.classList;
+			var animation;
+			cl.toggle('checked', this.checked);
+			cl.toggle('unchecked', !this.checked);
+			cl.toggle('checkmark', !this.checked);
+			cl.toggle('box', this.checked);
+			if (this.checked) {
+				animation = this.$.box_shrink;
+				animation.target = this.$.checkbox;
+				animation.play();
+			} else {
+				animation = this.$.checkmark_shrink;
+				animation.target = this.$.checkbox;
+				animation.play();
+			}
+			this.setAttribute('aria-checked', this.checked ? 'true' : 'false');
+			this.fire('core-change');
+		},
+
+		checkboxAnimationEnd: function () {
+			var cl = this.$.checkbox.classList;
+			var animation;
+			if (this.checked && !cl.contains('checkmark')) {
+				cl.toggle('checkmark', true);
+				animation = this.$.checkmark_expand;
+				animation.target = this.$.checkbox;
+				animation.play();
+			} else {
+				cl.toggle('checkmark', false);
+			}
+			if (!this.checked && !cl.contains('box')) {
+				cl.toggle('box', true);
+				animation = this.$.box_expand;
+				animation.target = this.$.checkbox;
+				animation.play();
+			} else {
+				cl.toggle('box', false);
+			}
+		}
+
+	});
+
 </script>
 </polymer-element>
